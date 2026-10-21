@@ -1,0 +1,13 @@
+const assert = require('node:assert/strict');
+const { initialState, applyOperation, changes } = require('./app.js');
+const before = initialState();
+const afterB = applyOperation(before, 'b', 2);
+assert.deepEqual(afterB, { copy: { a: 1, b: 2 }, shared: { a: 2, b: 2 } });
+assert.deepEqual(before, initialState(), 'The previous state must remain available for comparison');
+const afterA = applyOperation(afterB, 'a', 7);
+assert.equal(afterA.copy.b, 2);
+assert.equal(afterA.shared.b, 7);
+assert.deepEqual(changes(afterA, applyOperation(afterA, 'a', 7)), []);
+assert.deepEqual(changes(afterB, applyOperation(afterB, 'a', 1)), ['shared.a', 'shared.b']);
+assert.deepEqual(applyOperation(initialState(), 'a', -99), { copy: { a: -99, b: 1 }, shared: { a: -99, b: -99 } });
+console.log('Teaching model: all checks passed.');
